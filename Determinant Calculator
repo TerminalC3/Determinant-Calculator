@@ -1,0 +1,311 @@
+import tkinter
+from tkinter import *
+import math
+
+
+def call():
+    global index, run, final_value, answer_text
+
+    if run != 0:
+        answer_text.destroy()
+
+    run, index, final_val, = 0, 0, 0
+
+    determinant(element_list)
+
+
+def final(val):
+    global final_value, index, run, answer_text, process_element
+
+    run += 1
+
+    if (int(process_element[1]) + int(process_element[2])) % 2 == 0:
+        final_val = int(globals()[str(process_element)].get()) * int(val)
+    else:
+        final_val = int(globals()[str(process_element)].get()) * -int(val)
+    print(final_val, val, globals()[str(process_element)].get())
+    final_value = final_value + final_val
+
+    if len(element_list) == 4 or math.sqrt(len(element_list)) == run:
+        answer = "Determinant = " + str(final_value)
+        answer_text = Text(window, font=("consolas", 20, "bold"), bg=bg_color)
+        answer_text.insert(END, answer)
+        answer_text.tag_configure("center", justify='center')
+        answer_text.tag_add("center", "1.0", "end")
+        answer_text.pack(anchor=CENTER)
+    else:
+        index += 1
+        determinant(element_list)
+
+
+def determinant(ele_list):
+    global process_element
+    element_list1 = ele_list.copy()
+    print(element_list1)
+
+    while len(element_list1) != 4:
+        process_element = element_list1[index]
+        print(process_element)
+
+        for i in ele_list:
+            if i.startswith(process_element[0:2]) or i.endswith(str(process_element[2])):
+                element_list1.remove(i)
+                print(element_list1)
+        value1 = determinant(element_list1)
+        print(value1)
+        final(int(value1))
+
+    else:
+        value = int(globals()[element_list1[0]].get()) * int(globals()[element_list1[3]].get()) \
+                - int(globals()[element_list1[1]].get()) * int(globals()[element_list1[2]].get())
+        if len(element_list) == 4:
+            final(value)
+        else:
+            print(value)
+            return value
+
+
+def new():
+    global main_frame, my_canvas, scroll_x, scroll_y, display_frame, element_list, answer_text
+
+    if run != 0:
+        answer_text.destroy()
+
+    element_list = []
+
+    main_frame.destroy()
+
+    main_frame = Frame(window, height=400, width=400)
+    my_canvas = Canvas(main_frame, height=400, width=400, bg=bg_color, highlightthickness=2)
+    display_frame = Frame(my_canvas, height=400, width=400, bg=bg_color)
+    scroll_x = Scrollbar(main_frame, orient=HORIZONTAL, command=my_canvas.xview)
+    scroll_y = Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+    order_sub()
+
+
+def order_sub():
+    main_frame.pack()
+
+    my_canvas.grid(padx=10, pady=10)
+
+    display_frame.grid()
+
+    scroll_x.grid(row=1, column=0, sticky="ew")
+    scroll_y.grid(row=0, column=1, sticky="ns")
+
+    my_canvas.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+    my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
+
+    my_canvas.create_window(200, 200, window=display_frame, anchor=CENTER)
+
+    order = int(get_order.get())
+
+    for i in range(order):
+        for j in range(order):
+            element = "a" + str(i + 1) + str(j + 1)
+            element_list.append(element)
+            globals()[element] = Entry(display_frame, width=5, font=('Consolas', 15), bg="#E0C9A6")
+            # globals()[element].insert(0, "(" + "a" + str(i + 1) + str(j + 1) + ")")
+            globals()[element].grid(row=i, column=j, padx=2, pady=2)
+
+    sub = Button(display_frame, text="Submit", font=("Consolas", 9, "bold"), bg="light yellow", command=call)
+    sub.grid(column=display_frame.grid_size()[1] - 1)
+
+
+process_element = 0
+index = 0
+run = 0
+final_value = 0
+element_list = []
+bg_color = "red"
+window = Tk()
+window.config(bg=bg_color)
+window.geometry("500x550")
+window.title("Determinant Calculator")
+
+main_frame = Frame(window)
+my_canvas = Canvas(main_frame)
+display_frame = Frame(my_canvas)
+scroll_x = Scrollbar(main_frame, orient=HORIZONTAL, command=my_canvas.xview)
+scroll_y = Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+answer_text = Text(window, font=("consolas", 20, "bold"), bg=bg_color)
+
+get_order_frame = Frame(window, bg=bg_color, pady=20)
+
+Label(get_order_frame, text="Order of determinant:", font=("Consolas", 15), bg=bg_color).grid(row=0, column=0)
+
+get_order = Entry(get_order_frame, font=15, width=4)
+get_order.grid(row=0, column=2, padx=25)
+
+order_submit = Button(get_order_frame, text="Submit", command=new)
+order_submit.grid(row=0, column=4)
+
+get_order_frame.pack()
+
+window.mainloop()
+
+
+
+
+
+
+
+
+
+import tkinter
+from tkinter import *
+import math
+
+
+def call():
+    global index, run, final_value, answer_text
+
+    if run != 0:
+        answer_text.destroy()
+
+    run, index, final_value, = 0, 0, 0
+
+    if len(element_list) == 4:
+        is_2(element_list)
+    else:
+        not_2(element_list)
+
+
+def not_2(ele_list):
+    global list_number, process_element, pe_list
+
+    list_number_str = str(list_number)
+
+    globals()[list_number_str] = ele_list.copy()
+
+    while len(ele_list) != 4:
+        modify_list = globals()[list_number_str].copy()
+
+        process_element = globals()[list_number_str][index]
+
+        pe_list.append(process_element)
+
+        for i in ele_list:
+            if i.startswith(process_element[0:2]) or i.endswith(str(process_element[2])):
+                modify_list.remove(i)
+
+        list_number += 1
+        list_number_str = str(list_number)
+        globals()[list_number_str] = modify_list.copy()
+
+        not_2(globals()[list_number_str])
+
+    else:
+        is_2(globals()[list_number_str])
+
+
+def is_2(elemen_list):
+    global process_element, final_value, index, list_number
+
+    value = int(globals()[elemen_list[0]].get()) * int(globals()[elemen_list[3]].get()) \
+            - int(globals()[elemen_list[1]].get()) * int(globals()[elemen_list[2]].get())
+
+    process_element = str(process_element)
+
+    if (int(process_element[1]) + int(process_element[2])) % 2 == 0:
+        val = int(globals()[str(process_element)].get()) * int(value)
+    else:
+        val = int(globals()[str(process_element)].get()) * -int(value)
+
+    final_value = final_value + value
+    print(final_value)
+
+    index += 1
+    if index + 1 == len(globals()[list_number_str]):
+        index = 0
+        multiply_value = final_value * pe_list.pop()
+        list_number -= 1
+    else:
+        not_2(globals()[list_number_str])
+
+
+def new():
+    global main_frame, my_canvas, scroll_x, scroll_y, display_frame, element_list, answer_text
+
+    if run != 0:
+        answer_text.destroy()
+
+    element_list = []
+
+    main_frame.destroy()
+
+    main_frame = Frame(window, height=400, width=400)
+    my_canvas = Canvas(main_frame, height=400, width=400, bg=bg_color, highlightthickness=2)
+    display_frame = Frame(my_canvas, height=400, width=400, bg=bg_color)
+    scroll_x = Scrollbar(main_frame, orient=HORIZONTAL, command=my_canvas.xview)
+    scroll_y = Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+    order_sub()
+
+
+def order_sub():
+    main_frame.pack()
+
+    my_canvas.grid(padx=10, pady=10)
+
+    display_frame.grid()
+
+    scroll_x.grid(row=1, column=0, sticky="ew")
+    scroll_y.grid(row=0, column=1, sticky="ns")
+
+    my_canvas.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+    my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
+
+    my_canvas.create_window(200, 200, window=display_frame, anchor=CENTER)
+
+    order = int(get_order.get())
+
+    for i in range(order):
+        for j in range(order):
+            element = "a" + str(i + 1) + str(j + 1)
+            element_list.append(element)
+            globals()[element] = Entry(display_frame, width=5, font=('Consolas', 15), bg="#E0C9A6")
+            # globals()[element].insert(0, "(" + "a" + str(i + 1) + str(j + 1) + ")")
+            globals()[element].grid(row=i, column=j, padx=2, pady=2)
+
+    sub = Button(display_frame, text="Submit", font=("Consolas", 9, "bold"), bg="light yellow", command=call)
+    sub.grid(column=display_frame.grid_size()[1] - 1)
+
+
+list_number = 0
+pe_list = []
+process_element = 0
+index = 0
+run = 0
+final_value = 0
+element_list = []
+bg_color = "red"
+window = Tk()
+window.config(bg=bg_color)
+window.geometry("500x550")
+window.title("Determinant Calculator")
+
+main_frame = Frame(window)
+my_canvas = Canvas(main_frame)
+display_frame = Frame(my_canvas)
+scroll_x = Scrollbar(main_frame, orient=HORIZONTAL, command=my_canvas.xview)
+scroll_y = Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+answer_text = Text(window, font=("consolas", 20, "bold"), bg=bg_color)
+
+get_order_frame = Frame(window, bg=bg_color, pady=20)
+
+Label(get_order_frame, text="Order of determinant:", font=("Consolas", 15), bg=bg_color).grid(row=0, column=0)
+
+get_order = Entry(get_order_frame, font=15, width=4)
+get_order.grid(row=0, column=2, padx=25)
+
+order_submit = Button(get_order_frame, text="Submit", command=new)
+order_submit.grid(row=0, column=4)
+
+get_order_frame.pack()
+
+window.mainloop()
+
+
+
+
+
